@@ -18,6 +18,9 @@
 #include <unistd.h>
 #include <sys/signal.h>
 
+#include <geometry_msgs/Pose.h>
+#include <geometry_msgs/Pose2D.h>
+
 #include <ros/ros.h>
 #include <boost/thread.hpp>
 #include <sstream>
@@ -52,40 +55,25 @@ using namespace std;
 
 #define    BAD_CON              -1
 
+#define    PARA_START_BIT 0x02 // <STX>
+#define    PARA_END_BIT   0x03 // <ETX>
+#define    PARA_HEARTHEART_BIT 0x486561727442656174
 
-#define    PARA_READ_INPUT_DATA_SET_01 0x0001
-#define    PARA_READ_INPUT_DATA_SET_02 0x0001
-#define    PARA_READ_INPUT_DATA_SET_03 0x0001
-#define    PARA_READ_INPUT_DATA_SET_04 0x0001
+#define    PARA_CODE_LENGTH 12
+#define    PARA_XMCL_LENGTH 4
+#define    PARA_YMCL_LENGTH 4
+#define    PARA_AN2_LENGTH 5
+#define    PARA_FAMS_LENGTH 8
 
-#define    PARA_WRITE_OUTPUT_DATA_SET_01 0x000A
-#define    PARA_WRITE_OUTPUT_DATA_SET_02 0x000A
-#define    PARA_WRITE_OUTPUT_DATA_SET_03 0x000A
-#define    PARA_WRITE_OUTPUT_DATA_SET_04 0x000A
-#define    PARA_WRITE_OUTPUT_DATA_SET_05 0x000A
+#define    PARA_HEARTHEART_LENGTH 11
 
-#define    PARA_CONFIGURE_INPUT_DATA_SET_01 0x0001
-#define    PARA_CONFIGURE_INPUT_DATA_SET_02 0x0001
-#define    PARA_CONFIGURE_INPUT_DATA_SET_03 0x0001
-#define    PARA_CONFIGURE_INPUT_DATA_SET_04 0x0001
-
-#define    PARA_CONFIGURE_INPUT_ENABLE_COS 0x0000
-
-#define     CMD_MODE_POLL_REQUEST 0x00F1
-#define     CMD_MODE_POLL_RESONSE 0x001F
-
-#define     CMD_MODE_AUTO_REQUEST 0x00E1
-#define     CMD_MODE_AUTO_RESONSE 0x001E
-#define     CMD_MODE_AUTO_MSG_REQUEST 0x002E
-
-#define     CMD_MODE_READ_WRITE_SET 0x00F2
-#define     CMD_MODE_READ_WRITE_RESONSE 0x002F
 
 
 
 #define    PARA_READ_INPUT_LENGTH 10
 #define    PARA_WRITE_OUTUT_LENGTH 12
 #define    PARA_CONFIGURE_INPUT_LENGTH 12
+#define    PARA_READ_MCL_LENGTH 39
 
 
 typedef enum FUNCTION
@@ -96,6 +84,7 @@ typedef enum FUNCTION
     FUNCTION_READ_AUTO = 3,
 
 }FC;
+
 typedef enum ERROR_CONNECT
 {
   ERROR_CONNECT_DISCONNECT = 1,
@@ -107,6 +96,29 @@ typedef enum ERROR_CONNECT
   ERROR_CONNECT_DATA_ERROR = 2,
 
 }EC;
+    struct code_pose{
+      char rowcode;
+      char colcode;
+    };
+    struct label_content{
+      code_pose code;
+      char rowXname;
+      int rowXpos;
+      char colYname;
+      int colYpos;
+    };
+    struct label_pose {
+      int XMCL;
+      int YMCL;
+      int ANS;
+    };
+    struct label_code {
+      label_content content;
+      label_pose pose;
+      int FAMS;
+    }
+
+
 class clientSock {
   public:
     clientSock(string host, unsigned int port);
@@ -119,10 +131,15 @@ class clientSock {
     int connect();
     int disconnect();
 
+    int tcp_read();
+    int tcp_write();
 
     string host;
     unsigned int port;
     bool connected;
+    label_code Qrcode;
+
+   
 
 
   protected:
@@ -133,21 +150,24 @@ class clientSock {
     unsigned int PORT_IP;
 
     int enable_keepalive(int sock);
+    size_t getContent(unsigned char *buffer);
+    size_t getPose(unsigned char *buffer);
+    size_t getCode(unsigned char *buffer);
+    
+    
+    size_t tcp_send(unsigned char *to_send,int length);
+    size_t tcp_receive(unsigned char *buffer,int length);
     void set_bad_con();
     void set_bad_input();
 
    // void print_data(uint16_t buffer[],int lengh);
 
     static const unsigned int buffSize = 1024;
+    char Buffer[buffSize]={0};
     int sockfd;//establish connection to ID distribution server
 
     struct sockaddr_in servaddr;
-    uint16_t recv[buffSize];
     struct hostent* server;
-
-
-
-    
 
 
 };

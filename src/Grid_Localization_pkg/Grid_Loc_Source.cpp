@@ -14,6 +14,7 @@ clientSock::clientSock(string host, unsigned int port, bool automsg)
     HOST_IP = host;
     PORT_IP = port;
     connect();
+    
     //  tcp_auto_read(1);
 }
 
@@ -124,34 +125,177 @@ int clientSock::disconnect()
 
     return 0;
 }
+size_t clientSock::getContent(unsigned char *buffer){
 
+Qrcode.content.code.rowcode = buffer[1];
+Qrcode.content.code.colcode = buffer[1];
+Qrcode.content.rowXname = buffer[3];
+Qrcode.content.rowXpos = atoi(buffer[4-7]);
+Qrcode.content.colYname = buffer[8];
+Qrcode.content.colYpos = atoi(buffer[9-13]);
 
+}
+size_t clientSock::getPose(unsigned char *buffer){
 
+}
+size_t clientSock::getCode(unsigned char *buffer){
 
+}
+int clientSock::tcp_read()
+{
+    cout << ("tcp_read...") << endl;
 
+    int MAX_LENGTH = PARA_READ_MCL_LENGTH;
 
+    unsigned char to_rec[MAX_LENGTH];
+    ssize_t k = tcp_receive(to_rec, MAX_LENGTH);
+     cout << ("tcp_receive Stop") << endl;
+    if (k = -1)
+    {
+    }
+    if (to_rec[0] == PARA_START_BIT)
+    {
+        if (to_rec[PARA_HEARTHEART_LENGTH - 1] == PARA_END_BIT)
+        {
+            for (int i = 0; i < PARA_HEARTHEART_LENGTH; i++)
+            {
+                cout << "to_rec PING [" << i << "]= " << to_rec[i] << endl;
+            }
+        }else if (to_rec[PARA_READ_MCL_LENGTH - 1] == PARA_END_BIT)
+        {
+            for (int i = 0; i < PARA_READ_MCL_LENGTH; i++)
+            {
+                clientSock::getContent(to_rec);
+                cout << "label_content.code.rowcode = " << Qrcode.content.code.rowcode << endl;
+                cout << "label_content.code.rowcode = " << Qrcode.content.code.colcode << endl;
+                cout << "label_content.rowXname = " << Qrcode.content.rowXname << endl;
+                cout << "label_content.rowXpos = " << Qrcode.content.rowXpos << endl;
+                cout << "label_content.rowYname= " << Qrcode.content.colYname << endl;
+                cout << "label_content.rowYpos = " << Qrcode.content.colYpos << endl;
+                cout << "to_rec MCL [" << i << "]= " << to_rec[i] << endl;
+            }
+        }
+    }
+}
+size_t clientSock::tcp_send(unsigned char *to_send, int length)
+{
+    if (connected)
+    {
 
+        struct timeval tv;
+        tv.tv_sec = 10;
+        tv.tv_usec = 0;
+        fd_set writefds;
+        FD_ZERO(&writefds);
+        FD_SET(sockfd, &writefds);
 
+        int sentBytes = 0;
 
+        FD_ZERO(&writefds);
+        FD_SET(sockfd, &writefds);
+        int rv = select(sockfd + 1, NULL, &writefds, NULL, &tv);
 
+        if (rv == -1)
+        {
 
+            cout << errno << "  " << strerror(errno) << endl;
+            set_bad_con();
+        }
+        else if (rv == 0)
+        {
 
+            set_bad_con();
+            sentBytes = 0;
+        }
+        else if (rv > 0 && FD_ISSET(sockfd, &writefds))
+        {
+            unsigned char new_to_send[length];
+            for (size_t i = 0; i < length; i++)
+            {
+                new_to_send[i] = to_send[i];
+                /* code */
+            }
 
+            sentBytes = ::write(sockfd, (unsigned char *)new_to_send, length);
 
+            if (sentBytes == -1)
+            {
+                cout << "Error sending IDs: " << errno << "  " << strerror(errno) << endl;
+                set_bad_con();
+                return 1;
+            }
+        }
 
+        return 0;
+    }
+    else
+    {
+        connected = false;
+        return 1;
+    }
+}
+size_t clientSock::tcp_receive(unsigned char *buffer, int length)
+{
+     cout << ("tcp_receive Start") << endl;
+    unsigned char buffer_array[buffSize];
+    struct timeval tv;
+    tv.tv_sec = 45;
+    tv.tv_usec = 0;
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(sockfd, &readfds);
 
+    uint16_t resp = 0;
+    unsigned int n = 0;
 
+    FD_ZERO(&readfds);
+    FD_SET(sockfd, &readfds);
+    int rv = select(sockfd + 1, &readfds, NULL, NULL, &tv);
+    cout << ("Listining socket...") << endl;
+    if (rv <= -1)
+    {
+        cout << ("socket error accured") << endl;
 
+        set_bad_con();
+        return -1;
+    }
+    else if (rv == 0)
+    {
+        cout << ("socket timeout occured") << endl;
 
+        set_bad_con();
+        return -1;
+    }
+    else if (rv > 0 && FD_ISSET(sockfd, &readfds))
+    {
 
+        int tn = ::recv(sockfd, buffer_array, buffSize, 0); // avoid signcompare warning
 
-
-
+        if (tn > 0)
+        {
+            cout << ("Listining socket") << endl;
+            for (int i = 0; i < length; i++)
+            {
+                buffer[i] = buffer_array[i];
+            }
+            return tn;
+        }
+        else if (tn == -1)
+        {
+            cout << ("socket timeout occured") << endl;
+            set_bad_con();
+            return -1;
+        }
+    }
+    else
+    {
+        cout << "ERROR: rv: " << rv << endl;
+        set_bad_con();
+        return -1;
+    }
+}
 void clientSock::set_bad_con()
 {
     ROS_ERROR("DISCONNECT FLEXISOFT");
     connected = false;
-}
-void clientSock::set_bad_input()
-{
 }
