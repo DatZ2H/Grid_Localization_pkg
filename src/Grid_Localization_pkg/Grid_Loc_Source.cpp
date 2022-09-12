@@ -125,21 +125,42 @@ int clientSock::disconnect()
 
     return 0;
 }
-size_t clientSock::getContent(unsigned char *buffer){
-
-Qrcode.content.code.rowcode = buffer[1];
-Qrcode.content.code.colcode = buffer[1];
-Qrcode.content.rowXname = buffer[3];
-Qrcode.content.rowXpos = atoi(buffer[4-7]);
-Qrcode.content.colYname = buffer[8];
-Qrcode.content.colYpos = atoi(buffer[9-13]);
+string clientSock::convertToString(char* chararray){
+    string str(chararray);
+    return str;
+}
+int clientSock::convertToInt( char* chararray,int pos, int len){
+    string tmp = this->convertToString(chararray);
+    //cout << "tmp.substr(pos, len) = "<<tmp.substr(pos, len)<< endl;
+    return std::stoi(tmp.substr(pos, len));
 
 }
-size_t clientSock::getPose(unsigned char *buffer){
+size_t clientSock::getContent( char *buffer){
+    
+
+Qrcode.code.rowcode = buffer[POSE_POS_CODE];
+Qrcode.code.colcode = buffer[POSE_POS_CODE+1];
+
+Qrcode.content.x = this->convertToInt(buffer,POSE_POS_X+1,PARA_POS_X_LENGTH-1);
+Qrcode.content.y = this->convertToInt(buffer,POSE_POS_Y+1,PARA_POS_Y_LENGTH-1);
 
 }
-size_t clientSock::getCode(unsigned char *buffer){
-
+size_t clientSock::getPose( char *buffer){
+Qrcode.pose.XMCL= this->convertToInt(buffer,POSE_XMCL,PARA_XMCL_LENGTH);
+Qrcode.pose.YMCL = this->convertToInt(buffer,POSE_YMCL,PARA_YMCL_LENGTH);
+Qrcode.pose.ANS  = this->convertToInt(buffer,POSE_AN2,PARA_AN2_LENGTH);
+}
+size_t clientSock::getCode( char *buffer){
+                clientSock::getContent(buffer);
+                
+                cout << "label_content.code.rowcode = " << Qrcode.code.rowcode << endl;
+                cout << "label_content.code.rowcode = " << Qrcode.code.colcode << endl;
+                cout << "label_content.x = " << Qrcode.content.x << endl;
+                cout << "label_content.y = " << Qrcode.content.y << endl;
+                clientSock::getPose(buffer);
+                cout << "label_pose.XMCL.x = " << Qrcode.pose.XMCL<< endl;
+                cout << "label_pose.YMCL.y = " << Qrcode.pose.YMCL << endl;
+                cout << "label_pose.ANS = " << Qrcode.pose.ANS << endl;
 }
 int clientSock::tcp_read()
 {
@@ -147,7 +168,7 @@ int clientSock::tcp_read()
 
     int MAX_LENGTH = PARA_READ_MCL_LENGTH;
 
-    unsigned char to_rec[MAX_LENGTH];
+     char to_rec[MAX_LENGTH];
     ssize_t k = tcp_receive(to_rec, MAX_LENGTH);
      cout << ("tcp_receive Stop") << endl;
     if (k = -1)
@@ -165,19 +186,15 @@ int clientSock::tcp_read()
         {
             for (int i = 0; i < PARA_READ_MCL_LENGTH; i++)
             {
-                clientSock::getContent(to_rec);
-                cout << "label_content.code.rowcode = " << Qrcode.content.code.rowcode << endl;
-                cout << "label_content.code.rowcode = " << Qrcode.content.code.colcode << endl;
-                cout << "label_content.rowXname = " << Qrcode.content.rowXname << endl;
-                cout << "label_content.rowXpos = " << Qrcode.content.rowXpos << endl;
-                cout << "label_content.rowYname= " << Qrcode.content.colYname << endl;
-                cout << "label_content.rowYpos = " << Qrcode.content.colYpos << endl;
+
                 cout << "to_rec MCL [" << i << "]= " << to_rec[i] << endl;
+                clientSock::getCode(to_rec);
             }
+
         }
     }
 }
-size_t clientSock::tcp_send(unsigned char *to_send, int length)
+size_t clientSock::tcp_send( char *to_send, int length)
 {
     if (connected)
     {
@@ -209,14 +226,14 @@ size_t clientSock::tcp_send(unsigned char *to_send, int length)
         }
         else if (rv > 0 && FD_ISSET(sockfd, &writefds))
         {
-            unsigned char new_to_send[length];
+             char new_to_send[length];
             for (size_t i = 0; i < length; i++)
             {
                 new_to_send[i] = to_send[i];
                 /* code */
             }
 
-            sentBytes = ::write(sockfd, (unsigned char *)new_to_send, length);
+            sentBytes = ::write(sockfd, ( char *)new_to_send, length);
 
             if (sentBytes == -1)
             {
@@ -234,10 +251,10 @@ size_t clientSock::tcp_send(unsigned char *to_send, int length)
         return 1;
     }
 }
-size_t clientSock::tcp_receive(unsigned char *buffer, int length)
+size_t clientSock::tcp_receive( char *buffer, int length)
 {
      cout << ("tcp_receive Start") << endl;
-    unsigned char buffer_array[buffSize];
+     char buffer_array[buffSize];
     struct timeval tv;
     tv.tv_sec = 45;
     tv.tv_usec = 0;
@@ -246,7 +263,7 @@ size_t clientSock::tcp_receive(unsigned char *buffer, int length)
     FD_SET(sockfd, &readfds);
 
     uint16_t resp = 0;
-    unsigned int n = 0;
+     int n = 0;
 
     FD_ZERO(&readfds);
     FD_SET(sockfd, &readfds);

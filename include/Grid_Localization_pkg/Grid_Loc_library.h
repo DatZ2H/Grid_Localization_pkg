@@ -30,50 +30,64 @@
 using namespace std;
 	
 ///Function Code
-#define     READ_COILS        0x01
-#define     READ_INPUT_BITS   0x02
-#define     READ_REGS         0x03
-#define     READ_INPUT_REGS   0x04
-#define     WRITE_COIL        0x05
-#define     WRITE_REG         0x06
-#define     WRITE_COILS       0x0F
-#define     WRITE_REGS        0x10
+#define READ_COILS        0x01
+#define READ_INPUT_BITS   0x02
+#define READ_REGS         0x03
+#define READ_INPUT_REGS   0x04
+#define WRITE_COIL        0x05
+#define WRITE_REG         0x06
+#define WRITE_COILS       0x0F
+#define WRITE_REGS        0x10
 
 ///Exception Codes
 
-#define    EX_ILLEGAL_FUNCTION  0x01 // Function Code not Supported
-#define    EX_ILLEGAL_ADDRESS   0x02 // Output Address not exists
-#define    EX_ILLEGAL_VALUE     0x03 // Output Value not in Range
-#define    EX_SERVER_FAILURE    0x04 // Slave Deive Fails to process request
-#define    EX_ACKNOWLEDGE       0x05 // Service Need Long Time to Execute
-#define    EX_SERVER_BUSY       0x06 // Server Was Unable to Accept MB Request PDU
-#define    EX_NEGATIVE_ACK      0x07
-#define    EX_MEM_PARITY_PROB   0x08
-#define    EX_GATEWAY_PROBLEMP  0x0A // Gateway Path not Available
-#define    EX_GATEWYA_PROBLEMF  0x0B // Target Device Failed to Response
-#define    EX_BAD_DATA          0XFF // Bad Data lenght or Address
+#define EX_ILLEGAL_FUNCTION  0x01 // Function Code not Supported
+#define EX_ILLEGAL_ADDRESS   0x02 // Output Address not exists
+#define EX_ILLEGAL_VALUE     0x03 // Output Value not in Range
+#define EX_SERVER_FAILURE    0x04 // Slave Deive Fails to process request
+#define EX_ACKNOWLEDGE       0x05 // Service Need Long Time to Execute
+#define EX_SERVER_BUSY       0x06 // Server Was Unable to Accept MB Request PDU
+#define EX_NEGATIVE_ACK      0x07
+#define EX_MEM_PARITY_PROB   0x08
+#define EX_GATEWAY_PROBLEMP  0x0A // Gateway Path not Available
+#define EX_GATEWYA_PROBLEMF  0x0B // Target Device Failed to Response
+#define EX_BAD_DATA          0XFF // Bad Data lenght or Address
 
-#define    BAD_CON              -1
+#define BAD_CON              -1
 
-#define    PARA_START_BIT 0x02 // <STX>
-#define    PARA_END_BIT   0x03 // <ETX>
-#define    PARA_HEARTHEART_BIT 0x486561727442656174
+#define PARA_START_BIT 0x02 // <STX>
+#define PARA_END_BIT   0x03 // <ETX>
+#define PARA_HEARTHEART_BIT 0x486561727442656174
 
-#define    PARA_CODE_LENGTH 12
-#define    PARA_XMCL_LENGTH 4
-#define    PARA_YMCL_LENGTH 4
-#define    PARA_AN2_LENGTH 5
-#define    PARA_FAMS_LENGTH 8
+#define PARA_CODE_LENGTH 12
+#define PARA_POS_X_LENGTH 5
+#define PARA_POS_Y_LENGTH 5
+#define PARA_XMCL_LENGTH 4
+#define PARA_YMCL_LENGTH 4
+#define PARA_AN2_LENGTH 5
+#define PARA_FAMS_LENGTH 8
 
-#define    PARA_HEARTHEART_LENGTH 11
+#define PARA_HEARTHEART_LENGTH 11
+
+#define POSE_POS_CODE 1
+#define POSE_POS_X  3
+#define POSE_POS_Y  8
+#define POSE_XMCL 14
+#define POSE_YMCL 19
+#define POSE_AN2  24
+#define POSE_FAMS 30
+
+
+
+#define PARA_HEARTHEART_LENGTH 11
 
 
 
 
-#define    PARA_READ_INPUT_LENGTH 10
-#define    PARA_WRITE_OUTUT_LENGTH 12
-#define    PARA_CONFIGURE_INPUT_LENGTH 12
-#define    PARA_READ_MCL_LENGTH 39
+#define PARA_READ_INPUT_LENGTH 10
+#define PARA_WRITE_OUTUT_LENGTH 12
+#define PARA_CONFIGURE_INPUT_LENGTH 12
+#define PARA_READ_MCL_LENGTH 39
 
 
 typedef enum FUNCTION
@@ -100,23 +114,17 @@ typedef enum ERROR_CONNECT
       char rowcode;
       char colcode;
     };
-    struct label_content{
-      code_pose code;
-      char rowXname;
-      int rowXpos;
-      char colYname;
-      int colYpos;
-    };
     struct label_pose {
       int XMCL;
       int YMCL;
       int ANS;
     };
     struct label_code {
-      label_content content;
+      code_pose code;
+      geometry_msgs::Pose2D content;
       label_pose pose;
       int FAMS;
-    }
+    };
 
 
 class clientSock {
@@ -133,11 +141,14 @@ class clientSock {
 
     int tcp_read();
     int tcp_write();
+    string convertToString(char* chararray);
+    int convertToInt(char* chararray,int pos, int len);
 
     string host;
     unsigned int port;
     bool connected;
     label_code Qrcode;
+
 
    
 
@@ -150,13 +161,13 @@ class clientSock {
     unsigned int PORT_IP;
 
     int enable_keepalive(int sock);
-    size_t getContent(unsigned char *buffer);
-    size_t getPose(unsigned char *buffer);
-    size_t getCode(unsigned char *buffer);
+    size_t getContent( char *buffer);
+    size_t getPose( char *buffer);
+    size_t getCode( char *buffer);
     
     
-    size_t tcp_send(unsigned char *to_send,int length);
-    size_t tcp_receive(unsigned char *buffer,int length);
+    size_t tcp_send( char *to_send,int length);
+    size_t tcp_receive( char *buffer,int length);
     void set_bad_con();
     void set_bad_input();
 
@@ -168,6 +179,7 @@ class clientSock {
 
     struct sockaddr_in servaddr;
     struct hostent* server;
+
 
 
 };
