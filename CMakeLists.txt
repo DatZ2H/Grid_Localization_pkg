@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(Grid_Localization_pkg)
+project(grid_Localization_pkg)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -122,10 +122,10 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/Grid_Localization_pkg.cpp
+#   src/${PROJECT_NAME}/grid_Localization_pkg.cpp
 # )
 add_library(${PROJECT_NAME}_lib
-  src/${PROJECT_NAME}/Grid_Loc_Source.cpp
+  src/${PROJECT_NAME}/grid_Loc_Source.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -136,8 +136,8 @@ add_library(${PROJECT_NAME}_lib
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/Grid_Localization_pkg_node.cpp)
-add_executable(${PROJECT_NAME}_node src/Grid_Loc_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/grid_Localization_pkg_node.cpp)
+add_executable(${PROJECT_NAME}_node src/grid_Loc_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -219,7 +219,7 @@ install(DIRECTORY include/${PROJECT_NAME}/
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_Grid_Localization_pkg.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_grid_Localization_pkg.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

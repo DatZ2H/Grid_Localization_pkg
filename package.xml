@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>Grid_Localization_pkg</name>
+  <name>grid_Localization_pkg</name>
   <version>0.0.0</version>
-  <description>The Grid_Localization_pkg package</description>
+  <description>The grid_Localization_pkg package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
