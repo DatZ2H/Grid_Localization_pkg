@@ -31,7 +31,7 @@ clientSock::clientSock(int sock)
 
 clientSock::~clientSock()
 {
-    // disconnect();
+     disconnect();
 }
 
 int clientSock::connect()
@@ -151,16 +151,22 @@ Qrcode.pose.YMCL = this->convertToInt(buffer,POSE_YMCL,PARA_YMCL_LENGTH);
 Qrcode.pose.ANS  = this->convertToInt(buffer,POSE_AN2,PARA_AN2_LENGTH);
 }
 size_t clientSock::getCode( char *buffer){
-                clientSock::getContent(buffer);
+                this->getContent(buffer);
                 
                 cout << "label_content.code.rowcode = " << Qrcode.code.rowcode << endl;
-                cout << "label_content.code.rowcode = " << Qrcode.code.colcode << endl;
+                cout << "label_content.code.colcode = " << Qrcode.code.colcode << endl;
                 cout << "label_content.x = " << Qrcode.content.x << endl;
                 cout << "label_content.y = " << Qrcode.content.y << endl;
-                clientSock::getPose(buffer);
+                this->getPose(buffer);
                 cout << "label_pose.XMCL.x = " << Qrcode.pose.XMCL<< endl;
                 cout << "label_pose.YMCL.y = " << Qrcode.pose.YMCL << endl;
                 cout << "label_pose.ANS = " << Qrcode.pose.ANS << endl;
+}
+label_pose clientSock::getLocResult(){
+LocResult.XMCL=Qrcode.content.x*PARA_RESOLUTION_LENGTH+Qrcode.pose.XMCL;
+LocResult.YMCL=Qrcode.content.y*PARA_RESOLUTION_LENGTH+Qrcode.pose.YMCL;
+LocResult.ANS=Qrcode.pose.ANS;
+return LocResult;
 }
 int clientSock::tcp_read()
 {
@@ -188,8 +194,14 @@ int clientSock::tcp_read()
             {
 
                 cout << "to_rec MCL [" << i << "]= " << to_rec[i] << endl;
-                clientSock::getCode(to_rec);
+                
             }
+            this->getCode(to_rec);
+            this->getLocResult();
+                cout << "LocResult.XMCL= " << LocResult.XMCL<< endl;
+                cout << "LocResult.YMCL = " << LocResult.YMCL << endl;
+                cout << "LocResult.ANS = " << LocResult.ANS << endl;
+
 
         }
     }

@@ -11,3 +11,7 @@ uint8 map_match_status    # 1 byte MapMatchingStatus [0...100, 90: Good, 60: Med
 uint32 sync_timestamp_sec   # seconds part of synchronized timestamp in system time calculated by Software-PLL
 uint32 sync_timestamp_nsec  # nanoseconds part of synchronized timestamp in system time calculated by Software-PLL
 uint32 sync_timestamp_valid # 1: sync_timestamp successfully calculated by Software-PLL, 0: Software-PLL not yet synchronized
+
+uint16 resolution         # [mm]
+int64 XMCL                   # 8 byte X int64 [mm]
+int64 YMCL                   # 8 byte Y int64 [mm]

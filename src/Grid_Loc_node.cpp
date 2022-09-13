@@ -2,21 +2,29 @@
 
 #include <Grid_Localization_pkg/grid_loc.h>
 
- clientSock *Flexisoft = new clientSock("172.20.3.53", 2112);
+ clientSock *GridLOC = new clientSock("172.20.3.53", 2112);
 ros::Publisher LocalizationGridResultMessage_pub;
 Grid_Localization_pkg::grid_loc grid_loc;
 
 void LocalizationGridResultMessage_Function_pub(){
-    grid_loc.x = Flexisoft->Qrcode.pose.XMCL;
-    grid_loc.y = Flexisoft->Qrcode.pose.YMCL;
-    grid_loc.heading = Flexisoft->Qrcode.pose.ANS;
+
+    grid_loc.header.stamp  = ros::Time::now();
+
+    grid_loc.x = GridLOC->LocResult.XMCL;
+    grid_loc.y = GridLOC->LocResult.YMCL;
+    grid_loc.heading = GridLOC->LocResult.ANS;
+
+    grid_loc.resolution = PARA_RESOLUTION_LENGTH; 
+    grid_loc.XMCL = GridLOC->Qrcode.pose.XMCL;
+    grid_loc.YMCL = GridLOC->Qrcode.pose.YMCL;
+
     LocalizationGridResultMessage_pub.publish(grid_loc);
 }
 int main(int argc, char **argv)
 {
 
-    ROS_INFO("FLEXISOFT CONNECTING.");
-    ros::init(argc, argv, "safety_function");
+    ROS_INFO("Grid_loc CONNECTING.");
+    ros::init(argc, argv, "Grid_loc");
     ros::NodeHandle nh;
 
     LocalizationGridResultMessage_pub = nh.advertise<Grid_Localization_pkg::grid_loc>("/LocalizationGridResultMessage_pub", 10);
@@ -28,17 +36,17 @@ int main(int argc, char **argv)
     while (ros::ok())
     {
       
-        if (!Flexisoft->connected)
+        if (!GridLOC->connected)
         {
-            ROS_INFO("FLEXISOFT CONNECTING.....");
-            Flexisoft->connect();
+            ROS_INFO("grid_loc CONNECTING.....");
+            GridLOC->connect();
             
         }
-        while (ros::ok() && Flexisoft->connected)
+        while (ros::ok() && GridLOC->connected)
         {
             /* code */
 
-      Flexisoft->tcp_read();
+      GridLOC->tcp_read();
       LocalizationGridResultMessage_Function_pub();
 
 
@@ -49,9 +57,9 @@ int main(int argc, char **argv)
         loop_rate.sleep();
         ros::spinOnce();
     }
-    Flexisoft->disconnect();
+    GridLOC->disconnect();
     ros::spin();
-    delete (Flexisoft);
+    delete (GridLOC);
 
     return 0;
 }

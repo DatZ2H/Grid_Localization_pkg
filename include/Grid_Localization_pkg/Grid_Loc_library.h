@@ -69,6 +69,8 @@ using namespace std;
 
 #define PARA_HEARTHEART_LENGTH 11
 
+#define PARA_RESOLUTION_LENGTH 1000 // Resolution mm than 200mm
+
 #define POSE_POS_CODE 1
 #define POSE_POS_X  3
 #define POSE_POS_Y  8
@@ -81,13 +83,11 @@ using namespace std;
 
 #define PARA_HEARTHEART_LENGTH 11
 
-
-
-
 #define PARA_READ_INPUT_LENGTH 10
 #define PARA_WRITE_OUTUT_LENGTH 12
 #define PARA_CONFIGURE_INPUT_LENGTH 12
 #define PARA_READ_MCL_LENGTH 39
+
 
 
 typedef enum FUNCTION
@@ -115,9 +115,9 @@ typedef enum ERROR_CONNECT
       char colcode;
     };
     struct label_pose {
-      int XMCL;
-      int YMCL;
-      int ANS;
+      int64_t XMCL;
+      int64_t YMCL;
+      int32_t ANS;
     };
     struct label_code {
       code_pose code;
@@ -143,16 +143,13 @@ class clientSock {
     int tcp_write();
     string convertToString(char* chararray);
     int convertToInt(char* chararray,int pos, int len);
+    label_pose getLocResult();
 
     string host;
     unsigned int port;
     bool connected;
     label_code Qrcode;
-
-
-   
-
-
+    label_pose LocResult;
   protected:
 
   private:
@@ -179,9 +176,6 @@ class clientSock {
 
     struct sockaddr_in servaddr;
     struct hostent* server;
-
-
-
 };
 
 #endif // CLIENTSOCK_H
