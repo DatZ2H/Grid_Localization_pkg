@@ -1,4 +1,4 @@
-#include "Grid_Localization_pkg/Grid_Loc_library.h"
+#include "grid_Localization_pkg/grid_Loc_library.h"
 
 clientSock::clientSock(string host, unsigned int port)
 {
