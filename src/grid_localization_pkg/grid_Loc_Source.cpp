@@ -1,4 +1,4 @@
-#include "grid_Localization_pkg/grid_Loc_library.h"
+#include "grid_localization_pkg/grid_Loc_library.h"
 
 clientSock::clientSock(string host, unsigned int port)
 {
@@ -152,15 +152,7 @@ Qrcode.pose.ANS  = this->convertToInt(buffer,POSE_AN2,PARA_AN2_LENGTH);
 }
 size_t clientSock::getCode( char *buffer){
                 this->getContent(buffer);
-                
-                cout << "label_content.code.rowcode = " << Qrcode.code.rowcode << endl;
-                cout << "label_content.code.colcode = " << Qrcode.code.colcode << endl;
-                cout << "label_content.x = " << Qrcode.content.x << endl;
-                cout << "label_content.y = " << Qrcode.content.y << endl;
                 this->getPose(buffer);
-                cout << "label_pose.XMCL.x = " << Qrcode.pose.XMCL<< endl;
-                cout << "label_pose.YMCL.y = " << Qrcode.pose.YMCL << endl;
-                cout << "label_pose.ANS = " << Qrcode.pose.ANS << endl;
 }
 label_pose clientSock::getLocResult(){
 LocResult.XMCL=Qrcode.content.x*PARA_RESOLUTION_LENGTH+Qrcode.pose.XMCL;
@@ -170,13 +162,10 @@ return LocResult;
 }
 int clientSock::tcp_read()
 {
-    cout << ("tcp_read...") << endl;
-
     int MAX_LENGTH = PARA_READ_MCL_LENGTH;
 
      char to_rec[MAX_LENGTH];
     ssize_t k = tcp_receive(to_rec, MAX_LENGTH);
-     cout << ("tcp_receive Stop") << endl;
     if (k = -1)
     {
     }
@@ -184,24 +173,14 @@ int clientSock::tcp_read()
     {
         if (to_rec[PARA_HEARTHEART_LENGTH - 1] == PARA_END_BIT)
         {
-            for (int i = 0; i < PARA_HEARTHEART_LENGTH; i++)
-            {
-                cout << "to_rec PING [" << i << "]= " << to_rec[i] << endl;
-            }
+            ROS_INFO("GRID PING");
+            return STATUS_GRID_RECV_PING;
         }else if (to_rec[PARA_READ_MCL_LENGTH - 1] == PARA_END_BIT)
         {
-            for (int i = 0; i < PARA_READ_MCL_LENGTH; i++)
-            {
 
-                cout << "to_rec MCL [" << i << "]= " << to_rec[i] << endl;
-                
-            }
             this->getCode(to_rec);
             this->getLocResult();
-                cout << "LocResult.XMCL= " << LocResult.XMCL<< endl;
-                cout << "LocResult.YMCL = " << LocResult.YMCL << endl;
-                cout << "LocResult.ANS = " << LocResult.ANS << endl;
-
+        return STATUS_GRID_RECV_DATA;
 
         }
     }
@@ -265,7 +244,6 @@ size_t clientSock::tcp_send( char *to_send, int length)
 }
 size_t clientSock::tcp_receive( char *buffer, int length)
 {
-     cout << ("tcp_receive Start") << endl;
      char buffer_array[buffSize];
     struct timeval tv;
     tv.tv_sec = 45;
@@ -280,7 +258,6 @@ size_t clientSock::tcp_receive( char *buffer, int length)
     FD_ZERO(&readfds);
     FD_SET(sockfd, &readfds);
     int rv = select(sockfd + 1, &readfds, NULL, NULL, &tv);
-    cout << ("Listining socket...") << endl;
     if (rv <= -1)
     {
         cout << ("socket error accured") << endl;
@@ -302,7 +279,6 @@ size_t clientSock::tcp_receive( char *buffer, int length)
 
         if (tn > 0)
         {
-            cout << ("Listining socket") << endl;
             for (int i = 0; i < length; i++)
             {
                 buffer[i] = buffer_array[i];
@@ -325,6 +301,6 @@ size_t clientSock::tcp_receive( char *buffer, int length)
 }
 void clientSock::set_bad_con()
 {
-    ROS_ERROR("DISCONNECT FLEXISOFT");
+    ROS_ERROR("DISCONNECT GRID");
     connected = false;
 }

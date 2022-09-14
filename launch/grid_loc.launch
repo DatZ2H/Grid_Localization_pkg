@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="grid_localization_pkg" type="grid_localization_pkg_node" name="grid_localization_pkg_node" output="screen">
+        <param name="ip" type="str" value="127.0.0.1"/>
+        <param name="slave_id" type="int" value="18"/>
+        <param name="spin_rate" type="int" value="100"/>
+        <param name="port" type="int" value="1502"/>
+        <param name="tcp" type="bool" value="true"/>
+    </node>
+</launch>

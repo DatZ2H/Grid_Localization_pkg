@@ -110,6 +110,12 @@ typedef enum ERROR_CONNECT
   ERROR_CONNECT_DATA_ERROR = 2,
 
 }EC;
+typedef enum STATUS
+{
+STATUS_GRID_RECV_PING = 1,
+STATUS_GRID_RECV_DATA = 2,
+
+}ST;
     struct code_pose{
       char rowcode;
       char colcode;
@@ -150,13 +156,15 @@ class clientSock {
     bool connected;
     label_code Qrcode;
     label_pose LocResult;
+    int rate_;
+
   protected:
 
   private:
   
     string HOST_IP;
     unsigned int PORT_IP;
-
+    
     int enable_keepalive(int sock);
     size_t getContent( char *buffer);
     size_t getPose( char *buffer);

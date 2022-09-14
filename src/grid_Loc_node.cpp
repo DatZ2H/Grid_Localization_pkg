@@ -1,10 +1,10 @@
-#include <grid_Localization_pkg/grid_Loc_library.h>
+#include <grid_localization_pkg/grid_Loc_library.h>
 
-#include <grid_Localization_pkg/grid_loc.h>
+#include <grid_localization_pkg/grid_loc.h>
 
- clientSock *gridLOC = new clientSock("172.20.3.53", 2112);
+ clientSock *gridLOC = new clientSock("172.20.235.62", 2112);
 ros::Publisher LocalizationgridResultMessage_pub;
-grid_Localization_pkg::grid_loc grid_loc;
+grid_localization_pkg::grid_loc grid_loc;
 
 void LocalizationgridResultMessage_Function_pub(){
 
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "grid_loc");
     ros::NodeHandle nh;
 
-    LocalizationgridResultMessage_pub = nh.advertise<grid_Localization_pkg::grid_loc>("/LocalizationgridResultMessage_pub", 10);
+    LocalizationgridResultMessage_pub = nh.advertise<grid_localization_pkg::grid_loc>("/LocalizationgridResultMessage_pub", 10);
 
     ros::Rate loop_rate(30);
 
@@ -46,8 +46,12 @@ int main(int argc, char **argv)
         {
             /* code */
 
-      gridLOC->tcp_read();
+
+      if (gridLOC->tcp_read() == STATUS_GRID_RECV_DATA){
+
+      
       LocalizationgridResultMessage_Function_pub();
+      }
 
 
 
