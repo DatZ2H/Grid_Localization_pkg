@@ -4,7 +4,7 @@
 #include <grid_localization_pkg/LocalizationControllerResultMessage0502.h>
 #include <grid_localization_pkg/gridSetReadLocSrv.h>
 
-clientSock* gridLOC = new clientSock("172.20.3.53", 2112);
+clientSock* gridLOC = new clientSock("172.20.235.62", 2112);
 ros::Publisher LocalizationgridResultMessage_pub;
 grid_localization_pkg::grid_loc grid_loc;
 grid_localization_pkg::LocalizationControllerResultMessage0502 LocalizationControllerResultMessage0502;
@@ -17,12 +17,12 @@ void LocalizationgridResultMessage_Function_pub() {
     grid_loc.y = gridLOC->LlsResult.x;
     grid_loc.heading = gridLOC->LlsResult.heading;
 
-    gridLOC->LlsResult.loc_status = msg->loc_status;
+    gridLOC->LlsResult.loc_status = gridLOC->LlsResult.loc_status;
    // gridLOC->LlsResult.map_match_status = msg->map_match_status;
 
-    gridLOC->LlsResult.sync_timestamp_sec = msg->sync_timestamp_sec;
-    gridLOC->LlsResult.sync_timestamp_nsec = msg->sync_timestamp_nsec;
-    gridLOC->LlsResult.sync_timestamp_valid = msg->sync_timestamp_valid;
+    gridLOC->LlsResult.sync_timestamp_sec = gridLOC->LlsResult.sync_timestamp_sec;
+    gridLOC->LlsResult.sync_timestamp_nsec = gridLOC->LlsResult.sync_timestamp_nsec;
+    gridLOC->LlsResult.sync_timestamp_valid = gridLOC->LlsResult.sync_timestamp_valid;
 
     grid_loc.resolution = PARA_RESOLUTION_LENGTH;
     grid_loc.XMCL = gridLOC->Qrcode.pose.XMCL;
