@@ -157,6 +157,7 @@ class clientSock {
     label_code Qrcode;
     label_pose LocResult;
     int rate_;
+    int call_state=5;
 
   protected:
 

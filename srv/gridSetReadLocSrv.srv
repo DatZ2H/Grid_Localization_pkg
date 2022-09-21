@@ -1,0 +1,8 @@
+uint8 CALL
+# CALL = 0  stop
+# CALL = 1  1 time
+# CALL = 2  10 time
+# CALL = 3  100 time
+# CALL = 5  all time
+---
+bool success
