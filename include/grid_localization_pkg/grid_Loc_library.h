@@ -28,7 +28,7 @@
 
 
 using namespace std;
-	
+
 ///Function Code
 #define READ_COILS        0x01
 #define READ_INPUT_BITS   0x02
@@ -92,10 +92,10 @@ using namespace std;
 
 typedef enum FUNCTION
 {
-    FUNCTION_READ_INPUT = 0,
-    FUNCTION_WRITE_OUTPUT = 1,
-    FUNCTION_CONFIGURE = 2,
-    FUNCTION_READ_AUTO = 3,
+  FUNCTION_READ_INPUT = 0,
+  FUNCTION_WRITE_OUTPUT = 1,
+  FUNCTION_CONFIGURE = 2,
+  FUNCTION_READ_AUTO = 3,
 
 }FC;
 
@@ -112,79 +112,94 @@ typedef enum ERROR_CONNECT
 }EC;
 typedef enum STATUS
 {
-STATUS_GRID_RECV_PING = 1,
-STATUS_GRID_RECV_DATA = 2,
+  STATUS_GRID_RECV_PING = 1,
+  STATUS_GRID_RECV_DATA = 2,
 
 }ST;
-    struct code_pose{
-      char rowcode;
-      char colcode;
-    };
-    struct label_pose {
-      int64_t XMCL;
-      int64_t YMCL;
-      int32_t ANS;
-    };
-    struct label_code {
-      code_pose code;
-      geometry_msgs::Pose2D content;
-      label_pose pose;
-      int FAMS;
-    };
+struct code_pose {
+  char rowcode;
+  char colcode;
+};
+struct label_pose {
+  int64_t XMCL;
+  int64_t YMCL;
+  int32_t ANS;
+};
+struct label_code {
+  code_pose code;
+  geometry_msgs::Pose2D content;
+  label_pose pose;
+  int FAMS;
+};
+struct LLSResult{
+  uint64_t telegram_count;
+  uint64_t timestamp;
+  int64_t x;
+  int64_t y;
+  int32_t heading;
+  uint8_t loc_status;
+  uint8_t map_match_status;
+
+  uint32_t sync_timestamp_sec;
+  uint32_t sync_timestamp_nsec;
+  uint32_t sync_timestamp_valid;
+};
 
 
 class clientSock {
-  public:
-    clientSock(string host, unsigned int port);
-    clientSock(string host, unsigned int port,bool automsg);
-    clientSock();
-    clientSock(int sock);
-    ~clientSock();
+public:
+  clientSock(string host, unsigned int port);
+  clientSock(string host, unsigned int port, bool automsg);
+  clientSock();
+  clientSock(int sock);
+  ~clientSock();
 
-    bool hasError();
-    int connect();
-    int disconnect();
+  bool hasError();
+  int connect();
+  int disconnect();
 
-    int tcp_read();
-    int tcp_write();
-    string convertToString(char* chararray);
-    int convertToInt(char* chararray,int pos, int len);
-    label_pose getLocResult();
+  int tcp_read();
+  int tcp_write();
+  string convertToString(char* chararray);
+  int convertToInt(char* chararray, int pos, int len);
+  label_pose getLocResult();
 
-    string host;
-    unsigned int port;
-    bool connected;
-    label_code Qrcode;
-    label_pose LocResult;
-    int rate_;
-    int call_state=5;
+  string host;
+  unsigned int port;
+  bool connected;
+  label_code Qrcode;
+  label_pose LocResult;
+  LLSResult LlsResult;
+  int rate_;
+  int call_state = 5;
 
-  protected:
 
-  private:
-  
-    string HOST_IP;
-    unsigned int PORT_IP;
-    
-    int enable_keepalive(int sock);
-    size_t getContent( char *buffer);
-    size_t getPose( char *buffer);
-    size_t getCode( char *buffer);
-    
-    
-    size_t tcp_send( char *to_send,int length);
-    size_t tcp_receive( char *buffer,int length);
-    void set_bad_con();
-    void set_bad_input();
+protected:
 
-   // void print_data(uint16_t buffer[],int lengh);
+private:
 
-    static const unsigned int buffSize = 1024;
-    char Buffer[buffSize]={0};
-    int sockfd;//establish connection to ID distribution server
+  string HOST_IP;
+  unsigned int PORT_IP;
 
-    struct sockaddr_in servaddr;
-    struct hostent* server;
+  int enable_keepalive(int sock);
+  size_t getContent(char* buffer);
+  size_t getPose(char* buffer);
+  size_t getCode(char* buffer);
+
+
+  size_t tcp_send(char* to_send, int length);
+  size_t tcp_receive(char* buffer, int length);
+  void set_bad_con();
+  void set_bad_input();
+
+  // void print_data(uint16_t buffer[],int lengh);
+
+  static const unsigned int buffSize = 1024;
+  char Buffer[buffSize] = { 0 };
+  int sockfd;//establish connection to ID distribution server
+
+  struct sockaddr_in servaddr;
+  struct hostent* server;
 };
 
 #endif // CLIENTSOCK_H
