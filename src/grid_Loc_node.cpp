@@ -14,7 +14,7 @@ void LocalizationgridResultMessage_Function_pub() {
     grid_loc.header.stamp = ros::Time::now();
 
     grid_loc.x = gridLOC->LlsResult.x;
-    grid_loc.y = gridLOC->LlsResult.x;
+    grid_loc.y = gridLOC->LlsResult.y;
     grid_loc.heading = gridLOC->LlsResult.heading;
 
     gridLOC->LlsResult.loc_status = gridLOC->LlsResult.loc_status;
