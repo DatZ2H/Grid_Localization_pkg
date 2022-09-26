@@ -158,8 +158,13 @@ label_pose clientSock::getLocResult(){
 LocResult.XMCL=Qrcode.content.x*PARA_RESOLUTION_LENGTH+Qrcode.pose.XMCL;
 LocResult.YMCL=Qrcode.content.y*PARA_RESOLUTION_LENGTH+Qrcode.pose.YMCL;
 LocResult.ANS=Qrcode.pose.ANS;
+
 return LocResult;
 }
+size_t clientSock::getFAMS(char* buffer){
+Qrcode.FAMS=this->convertToInt(buffer,POSE_FAMS,PARA_FAMS_LENGTH);
+}
+
 int clientSock::tcp_read()
 {
     int MAX_LENGTH = PARA_READ_MCL_LENGTH;
@@ -180,6 +185,7 @@ int clientSock::tcp_read()
 
             this->getCode(to_rec);
             this->getLocResult();
+            this->getFAMS(to_rec);
         return STATUS_GRID_RECV_DATA;
 
         }

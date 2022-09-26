@@ -163,6 +163,8 @@ public:
   string convertToString(char* chararray);
   int convertToInt(char* chararray, int pos, int len);
   label_pose getLocResult();
+  
+
 
   string host;
   unsigned int port;
@@ -185,6 +187,7 @@ private:
   size_t getContent(char* buffer);
   size_t getPose(char* buffer);
   size_t getCode(char* buffer);
+  size_t getFAMS(char* buffer);
 
 
   size_t tcp_send(char* to_send, int length);

@@ -13,6 +13,7 @@ grid_localization_pkg::LocalizationControllerResultMessage0502 LocalizationContr
 void LocalizationgridResultMessage_Function_pub() {
 
     grid_loc.header.stamp = ros::Time::now();
+    grid_loc.timestamp= gridLOC->Qrcode.FAMS;
 
     grid_loc.x = gridLOC->LlsResult.x;
     grid_loc.y = gridLOC->LlsResult.y;
@@ -26,6 +27,8 @@ void LocalizationgridResultMessage_Function_pub() {
     gridLOC->LlsResult.sync_timestamp_valid = gridLOC->LlsResult.sync_timestamp_valid;
 
     grid_loc.resolution = PARA_RESOLUTION_LENGTH;
+    grid_loc.rowcode =gridLOC->Qrcode.code.rowcode;
+    grid_loc.colcode =gridLOC->Qrcode.code.colcode;
     grid_loc.XMCL = gridLOC->Qrcode.pose.XMCL;
     grid_loc.YMCL = gridLOC->Qrcode.pose.YMCL;
 
@@ -44,6 +47,7 @@ void LocalizationgridResultMessage_Function_pub() {
 void gridLocalizationgridResul_Function_pub() {
 
     grid_loc.header.stamp = ros::Time::now();
+    grid_loc.timestamp= gridLOC->Qrcode.FAMS;
 
     grid_loc.x = gridLOC->LlsResult.x;
     grid_loc.y = gridLOC->LlsResult.y;
@@ -57,6 +61,8 @@ void gridLocalizationgridResul_Function_pub() {
     gridLOC->LlsResult.sync_timestamp_valid = gridLOC->LlsResult.sync_timestamp_valid;
 
     grid_loc.resolution = PARA_RESOLUTION_LENGTH;
+    grid_loc.rowcode =gridLOC->Qrcode.code.rowcode;
+    grid_loc.colcode =gridLOC->Qrcode.code.colcode;
     grid_loc.XMCL = gridLOC->Qrcode.pose.XMCL;
     grid_loc.YMCL = gridLOC->Qrcode.pose.YMCL;
 

@@ -13,5 +13,7 @@ uint32 sync_timestamp_nsec  # nanoseconds part of synchronized timestamp in syst
 uint32 sync_timestamp_valid # 1: sync_timestamp successfully calculated by Software-PLL, 0: Software-PLL not yet synchronized
 
 uint16 resolution         # [mm]
+uint8 rowcode
+uint8 colcode
 int64 XMCL                   # 8 byte X int64 [mm]
 int64 YMCL                   # 8 byte Y int64 [mm]
