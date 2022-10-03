@@ -29,6 +29,7 @@ void LocalizationgridResultMessage_Function_pub() {
     grid_loc.resolution = PARA_RESOLUTION_LENGTH;
     grid_loc.rowcode =gridLOC->Qrcode.code.rowcode;
     grid_loc.colcode =gridLOC->Qrcode.code.colcode;
+    grid_loc.Yaw =gridLOC->LocResult.ANS;
     grid_loc.XMCL = gridLOC->Qrcode.pose.XMCL;
     grid_loc.YMCL = gridLOC->Qrcode.pose.YMCL;
 
@@ -63,6 +64,7 @@ void gridLocalizationgridResul_Function_pub() {
     grid_loc.resolution = PARA_RESOLUTION_LENGTH;
     grid_loc.rowcode =gridLOC->Qrcode.code.rowcode;
     grid_loc.colcode =gridLOC->Qrcode.code.colcode;
+    grid_loc.Yaw =gridLOC->LocResult.ANS;
     grid_loc.XMCL = gridLOC->Qrcode.pose.XMCL;
     grid_loc.YMCL = gridLOC->Qrcode.pose.YMCL;
 

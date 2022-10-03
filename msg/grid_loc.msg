@@ -15,5 +15,6 @@ uint32 sync_timestamp_valid # 1: sync_timestamp successfully calculated by Softw
 uint16 resolution         # [mm]
 uint8 rowcode
 uint8 colcode
+int32 Yaw
 int64 XMCL                   # 8 byte X int64 [mm]
 int64 YMCL                   # 8 byte Y int64 [mm]
