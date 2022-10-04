@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   genmsg
+  agv_define
 )
 
 ## System dependencies are found with CMake's conventions
@@ -106,7 +107,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}_lib
-  CATKIN_DEPENDS roscpp std_msgs
+  CATKIN_DEPENDS roscpp std_msgs agv_define
   #DEPENDS system_lib
 )
 
@@ -139,6 +140,8 @@ add_library(${PROJECT_NAME}_lib
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/grid_localization_pkg_node.cpp)
 add_executable(${PROJECT_NAME}_node src/grid_Loc_node.cpp)
+add_executable(Compare_node src/Compare_node.cpp)
+add_executable(GetLoc_node src/GetLoc_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -163,7 +166,14 @@ target_link_libraries(${PROJECT_NAME}_node
   ${PROJECT_NAME}_lib
   ${catkin_LIBRARIES}
 )
-
+target_link_libraries(Compare_node
+  ${PROJECT_NAME}_lib
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(GetLoc_node
+  ${PROJECT_NAME}_lib
+  ${catkin_LIBRARIES}
+)
 #############
 ## Install ##
 #############
